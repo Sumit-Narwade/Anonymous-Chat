@@ -49,126 +49,79 @@
 
 
     <script>
+    // IMPORTANT: Force WebSocket only (Render blocks polling)
+    const socket = io({
+        transports: ["websocket"]
+    });
 
-        const socket = io();
+    let username = prompt("Enter your anonymous name:") || "Anonymous";
+    document.getElementById("welcome").textContent = "Welcome, " + username;
 
-        let username = prompt("Enter your anonymous name:") || "Anonymous";
+    const chatBox = document.getElementById("chat-box");
+    const form = document.getElementById("chat-form");
+    const msgInput = document.getElementById("msg");
+    const themeBtn = document.getElementById('toggle-theme');
+    const themeIcon = themeBtn.querySelector('.icon');
 
-        document.getElementById("welcome").textContent = "Welcome, " + username;
+    // Restore theme preference
+    if (localStorage.getItem('theme') === 'dark') {
+        document.body.classList.add('dark');
+        themeIcon.textContent = "🌙";
+    }
 
+    // Join chat
+    socket.emit('join', username);
 
-        const chatBox = document.getElementById("chat-box");
+    function updateBackgroundSize() {
+        chatBox.style.backgroundSize = `100% ${chatBox.scrollHeight}px`;
+    }
 
-        const form = document.getElementById("chat-form");
+    socket.on('message', function(data) {
+        const p = document.createElement('div');
+        p.classList.add("bubble");
 
-        const msgInput = document.getElementById("msg");
-
-        const themeBtn = document.getElementById('toggle-theme');
-
-        const themeIcon = themeBtn.querySelector('.icon');
-
-
-        // Restore theme preference
-
-        if (localStorage.getItem('theme') === 'dark') {
-
-            document.body.classList.add('dark');
-
-            themeIcon.textContent = "🌙";
-
+        if (data.username === username) {
+            p.classList.add("mine");
+        } else {
+            p.classList.add("theirs");
         }
 
+        p.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+        chatBox.appendChild(p);
 
-        // Join chat
+        chatBox.scrollTop = chatBox.scrollHeight;
+        updateBackgroundSize();
+    });
 
-        socket.emit('join', username);
+    socket.on('status', function(msg) {
+        const status = document.createElement('div');
+        status.classList.add("status");
+        status.textContent = msg;
+        chatBox.appendChild(status);
 
+        chatBox.scrollTop = chatBox.scrollHeight;
+        updateBackgroundSize();
+    });
 
-        function updateBackgroundSize() {
-
-            chatBox.style.backgroundSize = `100% ${chatBox.scrollHeight}px`;
-
+    form.onsubmit = function(e) {
+        e.preventDefault();
+        if (msgInput.value.trim() !== '') {
+            socket.send({ username, message: msgInput.value });
+            msgInput.value = '';
         }
+    };
 
+    themeBtn.onclick = () => {
+        document.body.classList.toggle('dark');
+        const isDark = document.body.classList.contains('dark');
+        themeIcon.textContent = isDark ? "🌙" : "🌞";
+        themeIcon.classList.add('rotate');
+        localStorage.setItem('theme', isDark ? 'dark' : 'light');
 
-        socket.on('message', function(data) {
+        setTimeout(() => themeIcon.classList.remove('rotate'), 500);
+    };
+</script>
 
-            const p = document.createElement('div');
-
-            p.classList.add("bubble");
-
-            if (data.username === username) {
-
-                p.classList.add("mine");
-
-            } else {
-
-                p.classList.add("theirs");
-
-            }
-
-            p.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
-
-            chatBox.appendChild(p);
-
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            updateBackgroundSize();
-
-        });
-
-
-        socket.on('status', function(msg) {
-
-            const status = document.createElement('div');
-
-            status.classList.add("status");
-
-            status.textContent = msg;
-
-            chatBox.appendChild(status);
-
-
-            chatBox.scrollTop = chatBox.scrollHeight;
-
-            updateBackgroundSize();
-
-        });
-
-
-        form.onsubmit = function(e) {
-
-            e.preventDefault();
-
-            if (msgInput.value.trim() !== '') {
-
-                socket.send({ username, message: msgInput.value });
-
-                msgInput.value = '';
-
-            }
-
-        };
-
-
-        themeBtn.onclick = () => {
-
-            document.body.classList.toggle('dark');
-
-            const isDark = document.body.classList.contains('dark');
-
-            themeIcon.textContent = isDark ? "🌙" : "🌞";
-
-            themeIcon.classList.add('rotate');
-
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-
-            setTimeout(() => themeIcon.classList.remove('rotate'), 500);
-
-        };
-
-    </script>
 
 </body>
 

@@ -1,49 +1,55 @@
 from flask import Flask, render_template, request
-from flask_socketio import SocketIO, send, emit
+from flask_socketio import SocketIO, emit
 
 app = Flask(__name__)
-app.secret_key = 'secret!'
+app.secret_key = "secret-key"
 
-# Use eventlet async mode for Render
-socketio = SocketIO(app, async_mode='eventlet')
+# Enable websocket properly on Render
+socketio = SocketIO(app, cors_allowed_origins="*", async_mode="eventlet")
 
-# username -> set of session IDs
-user_sessions = {}
+# Track users per session
+active_users = {}   # sid → username
+user_sessions = {}  # username → set(sid)
 
-@app.route('/')
+@app.route("/")
 def index():
-    return render_template('index.html')
+    return render_template("index.html")
 
-@socketio.on('join')
+@socketio.on("join")
 def handle_join(username):
     sid = request.sid
+    active_users[sid] = username
+
     if username not in user_sessions:
         user_sessions[username] = set()
+
     user_sessions[username].add(sid)
-    emit('status', f"{username} joined the chat", broadcast=True)
 
-@socketio.on('message')
+    emit("status", f"{username} joined the chat", broadcast=True)
+
+@socketio.on("message")
 def handle_message(data):
-    username = data.get('username', 'Anonymous')
-    message = data.get('message', '')
-    send({'username': username, 'message': message}, broadcast=True)
+    username = data.get("username", "Anonymous")
+    message = data.get("message", "")
 
-@socketio.on('disconnect')
+    emit("message", {"username": username, "message": message}, broadcast=True)
+
+@socketio.on("disconnect")
 def handle_disconnect():
     sid = request.sid
-    username_to_remove = None
 
-    for username, sessions in list(user_sessions.items()):
-        if sid in sessions:
-            sessions.remove(sid)
-            if not sessions:  # no sessions left for this user
-                username_to_remove = username
-                del user_sessions[username]
-            break
+    if sid in active_users:
+        username = active_users[sid]
 
-    if username_to_remove:
-        emit('status', f"{username_to_remove} left the chat", broadcast=True)
+        # remove sid
+        user_sessions[username].remove(sid)
 
-if __name__ == '__main__':
-    # Render uses port environment variable OR defaults to 10000
-    socketio.run(app, host='0.0.0.0', port=10000)
+        # remove username if no sessions left
+        if len(user_sessions[username]) == 0:
+            del user_sessions[username]
+            emit("status", f"{username} left the chat", broadcast=True)
+
+        del active_users[sid]
+
+if __name__ == "__main__":
+    socketio.run(app, host="0.0.0.0", port=10000)

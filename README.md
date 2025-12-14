@@ -84,6 +84,8 @@ Chat with users in the same room only
 
 Toggle Dark Mode with 🌙 button
 
+
+
 📂 Project Structure
 anonymous-chat/
 │
@@ -94,9 +96,9 @@ anonymous-chat/
 └── static/
     └── style.css       # CSS styling for the app
 
-<img width="1919" height="1019" alt="Screenshot 2025-12-14 214259" src="https://github.com/user-attachments/assets/5158b5e2-daae-4712-9d5e-fee7019bc04e" />
-<img width="1919" height="1028" alt="Screenshot 2025-12-14 214247" src="https://github.com/user-attachments/assets/d4318b69-b82c-4f83-987c-fef95a8deec1" />
-<img width="1915" height="939" alt="Screenshot 2025-12-14 214235" src="https://github.com/user-attachments/assets/809d4eed-380c-4620-8413-447337d56971" />
-<img width="1910" height="939" alt="Screenshot 2025-12-14 214223" src="https://github.com/user-attachments/assets/8c4e7eeb-b5f1-4d40-bb62-88a7c7716fd1" />
 
-    
+<img width="1919" height="1019" alt="Screenshot 2025-12-14 214259" src="https://github.com/user-attachments/assets/118b5d8f-53a1-47a7-a131-16e03f4e971d" />
+<img width="1919" height="1028" alt="Screenshot 2025-12-14 214247" src="https://github.com/user-attachments/assets/6a40ddf1-b2a4-4edc-8816-810ce098fb0b" />
+<img width="1915" height="939" alt="Screenshot 2025-12-14 214235" src="https://github.com/user-attachments/assets/a4c60b4e-0a9c-4bbb-aef0-7d7f20939da5" />
+<img width="1910" height="939" alt="Screenshot 2025-12-14 214223" src="https://github.com/user-attachments/assets/1cfa3ef5-7d67-4fc4-874e-a20401c2a005" />
+

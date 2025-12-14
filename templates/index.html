@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Anonymous Chat</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <h3 id="room-title">MAIN ROOM</h3>
+    <div>
+        <button onclick="socket.emit('create_room')">Create Room</button>
+        <button onclick="joinRoom()">Join Room</button>
+        <button id="toggle-theme">🌙</button>
+    </div>
+  </div>
+
+  <!-- CHAT -->
+  <div id="chat" class="chat-box"></div>
+
+  <!-- CONTROLS -->
+  <div class="chat-form">
+    <input id="msg" placeholder="Type message..." autocomplete="off">
+    <button onclick="send()">➤</button>
+  </div>
+
+</div>
+
+<!-- MODAL FOR USERNAME -->
+<div id="overlay" style="position:fixed; inset:0; background:#0008; display:flex; align-items:center; justify-content:center;">
+  <div style="background:white; padding:20px; border-radius:10px;">
+    <h3>Enter your name</h3>
+    <input id="usernameInput">
+    <br><br>
+    <button onclick="setName()">Start</button>
+  </div>
+</div>
+
+<script>
+const socket = io();
+let username = "";
+
+function setName() {
+  username = document.getElementById("usernameInput").value;
+  if (!username) return;
+  socket.emit("set_username", username);
+  document.getElementById("overlay").style.display = "none";
+}
+
+// Send chat message
+function send() {
+  const msg = document.getElementById("msg").value;
+  if (!msg) return;
+  socket.emit("send_message", msg);
+  document.getElementById("msg").value = "";
+}
+
+// Join a room with code
+function joinRoom() {
+  const code = prompt("Enter 6-digit room code:");
+  if (code) {
+    socket.emit("join_room_code", code);
+    document.getElementById("room-title").textContent = "ROOM " + code;
+  }
+}
+
+// Listen for messages
+socket.on("message", data => {
+  addBubble(`${data.username}: ${data.message}`, data.username === username);
+});
+
+// Status updates (join/leave)
+socket.on("status", msg => {
+  addStatus(msg);
+});
+
+// Room created
+socket.on("room_created", code => {
+  alert("Room created. Code: " + code);
+  document.getElementById("room-title").textContent = "ROOM " + code;
+});
+
+// Error
+socket.on("error", err => alert(err));
+
+// Add message bubble
+function addBubble(text, mine) {
+  const div = document.createElement("div");
+  div.className = "bubble " + (mine ? "mine" : "theirs");
+  div.textContent = text;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+// Add status message
+function addStatus(text) {
+  const div = document.createElement("div");
+  div.className = "status";
+  div.textContent = text;
+  chat.appendChild(div);
+}
+
+// Dark mode toggle
+document.getElementById("toggle-theme").onclick = () => {
+  document.body.classList.toggle("dark");
+};
+</script>
+
+</body>
+</html>

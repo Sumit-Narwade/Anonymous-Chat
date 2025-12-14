@@ -1,0 +1,247 @@
+body {
+
+    font-family: Arial, sans-serif;
+
+    margin: 0;
+
+    background: #f0f0f0;
+
+    transition: background 0.3s ease;
+
+    color: #000;
+
+}
+
+
+body.dark {
+
+    background: #181818;
+
+    color: white;
+
+}
+
+
+.app {
+
+    display: flex;
+
+    flex-direction: column;
+
+    min-height: 100vh;
+
+}
+
+
+.header {
+
+    padding: 10px;
+
+    background: #650193;
+
+    color: white;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+}
+
+
+#toggle-theme {
+
+    border: none;
+
+    background: none;
+
+    font-size: 1.5em;
+
+    cursor: pointer;
+
+    transition: transform 0.3s ease;
+
+}
+
+
+.rotate {
+
+    animation: spin 0.6s ease-in-out;
+
+}
+
+
+@keyframes spin {
+
+    from { transform: rotate(0deg); }
+
+    to { transform: rotate(360deg); }
+
+}
+
+
+.chat-box {
+
+    flex: 1;
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+    background: linear-gradient(to bottom, #d0cfcf, #d0cfcf);
+
+    background-repeat: no-repeat;
+
+    scroll-behavior: smooth;
+
+}
+
+body.dark .chat-box {
+
+    background: linear-gradient(to bottom, #181818, #222);
+
+}
+
+
+.bubble {
+
+    max-width: 70%;
+
+    padding: 10px;
+
+    margin: 5px;
+
+    border-radius: 15px;
+
+    animation: fadeIn 0.2s ease-in-out;
+
+}
+
+
+.mine {
+
+    background: #016cae;
+
+    color: white;
+
+    margin-left: auto;
+
+}
+
+
+.theirs {
+
+    background: linear-gradient(135deg, #7000ac, #7000ac);
+
+    color: white;
+
+    margin-right: auto;
+
+}
+
+
+.status {
+
+    text-align: center;
+
+    font-size: 0.8em;
+
+    color: gray;
+
+    font-style: italic;
+
+    margin: 5px 0;
+
+}
+
+
+.chat-form {
+
+    display: flex;
+
+    padding: 8px;
+
+    background: white;
+
+    border-top: 1px solid #ccc;
+
+}
+
+body.dark .chat-form {
+
+    background: #222;
+
+}
+
+
+.chat-form input {
+
+    flex: 1;
+
+    padding: 8px;
+
+    font-size: 1em;
+
+    border: none;
+
+    outline: none;
+
+    border-radius: 20px;
+
+    background: #f5f5f5;
+
+}
+
+body.dark .chat-form input {
+
+    background: #333;
+
+    color: white;
+
+}
+
+
+.chat-form button {
+
+    background: #650193;
+
+    border: none;
+
+    padding: 8px 12px;
+
+    color: white;
+
+    border-radius: 50%;
+
+    cursor: pointer;
+
+}
+
+.chat-form button:hover {
+
+    background: #650193;
+
+}
+
+
+@keyframes fadeIn {
+
+    from { opacity: 0; transform: translateY(5px); }
+
+    to { opacity: 1; transform: translateY(0); }
+
+}
+
+
+@media (max-width: 768px) {
+
+    .chat-form {
+
+        position: sticky;
+
+        bottom: 0;
+
+    }
+
+}
